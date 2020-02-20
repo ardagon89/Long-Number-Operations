@@ -15,7 +15,7 @@ public class Num  implements Comparable<Num> {
 
     public Num(String s) {
     	int num_digits;
-    	if(s.substring(0, 1) == "-")
+    	if(s.charAt(0) == '-')
     	{
     		this.isNegative = true;
     		s = s.substring(1);
@@ -51,6 +51,7 @@ public class Num  implements Comparable<Num> {
     	if(x < 0)
     	{
     		this.isNegative = true;
+    		x *= -1;
     	}
     	else
     	{
@@ -104,17 +105,110 @@ public class Num  implements Comparable<Num> {
     			result = b;
     			smaller = a;
     		}
-    		int len = a.len >= b.len ? a.len : b.len;
-    		for(int i = 0; i <= len; i++)
+    		long carry = 0;
+    		for(int i = 0; i < result.len; i++)
     		{
-    			
+    			if(i < smaller.len)
+    			{
+    				result.arr[i] += (smaller.arr[i]);
+    			}
+    			result.arr[i] += carry;
+    			carry = result.arr[i]/result.base;
+    			result.arr[i] = result.arr[i] % result.base;
+    		}
+    		if(carry > 0)
+    		{
+    			long[] temp = new long[result.len+1];
+    			temp[result.len] = carry;
+    			System.arraycopy(result.arr, 0, temp,  0, result.len);
+    			result.arr = temp;
+    			result.len = temp.length;
+    		}
+    		System.out.println("Sum:");
+    		for(int i=0;i<result.len;i++)
+    		{
+        		System.out.println(result.arr[i]);
     		}
     		return result;
     	}
     }
 
     public static Num subtract(Num a, Num b) {
-	return null;
+    	Num result;
+    	if(a.isNegative && b.isNegative)
+    	{
+    		a.isNegative = false;
+    		b.isNegative = false;
+    		result = subtract(a, b);
+    		result.isNegative = !result.isNegative;
+    	}
+    	else if(a.isNegative && !b.isNegative)
+    	{
+    		b.isNegative = true;
+    		result = add(a, b);
+    	}
+    	else if (!a.isNegative && b.isNegative)
+    	{
+    		b.isNegative = false;
+    		result = add(a, b);
+    	}
+    	else
+    	{
+    		if((b.len > a.len))
+    		{
+    			result = subtract(b, a);
+    			result.isNegative = true;
+    		}
+    		else
+    		{
+    			Num smaller;
+    			result = a;
+    			smaller = b;
+        		long borrow = 0;
+        		for(int i = 0; i < result.len; i++)
+        		{
+        			if(i < smaller.len)
+        			{
+        				if (result.arr[i] >= smaller.arr[i]+borrow)
+        				{
+        					result.arr[i] -= (smaller.arr[i]+borrow);
+        					borrow = 0;
+        				}
+        				else
+        				{
+        					result.arr[i] += result.base;
+        					result.arr[i] -= (smaller.arr[i]+borrow);
+        					borrow = 1;
+        				}
+        			}
+        			else
+        			{
+        				if (result.arr[i] >= borrow)
+        				{
+        					result.arr[i] -= (borrow);
+        					borrow = 0;
+        				}
+        				else
+        				{
+        					result.arr[i] += result.base;
+        					result.arr[i] -= (borrow);
+        					borrow = 1;
+        				}
+        			}
+        		}
+        		if(borrow > 0)
+        		{
+        			result.isNegative = true;
+        			result.arr[result.len-1] = result.base - result.arr[result.len-1];
+        		}
+        		System.out.println("Sub:");
+        		for(int i=0;i<result.len;i++)
+        		{
+            		System.out.println(result.arr[i]);
+        		}
+    		}
+    	}
+	return result;
     }
 
     public static Num product(Num a, Num b) {
@@ -156,7 +250,22 @@ public class Num  implements Comparable<Num> {
     
     // Return number to a string in base 10
     public String toString() {
-	return null;
+    	StringBuilder sb = new StringBuilder(this.isNegative ? "-" : "");
+    	sb.append(String.valueOf(this.arr[this.len-1]));
+    	for(int i = this.len-2; i>=0; i--)
+    	{
+    		String num = String.valueOf(this.arr[i]);
+    		int len_diff = String.valueOf(this.base).length() - 1 - num.length() ;
+    		if(len_diff > 0)
+    		{
+    			for(int j=0; j<len_diff; j++)
+    			{
+    				sb.append("0");
+    			}
+    		}
+    		sb.append(num);
+    	}
+	return sb.toString();
     }
 
     public long base() { return base; }
@@ -186,12 +295,12 @@ public class Num  implements Comparable<Num> {
 	return null;
     }
 
-
     public static void main(String[] args) {
-	Num x = new Num(23372036854775807L);
-	Num y = new Num("8456452342035456456");
+	Num x = new Num(1L);
+	Num y = new Num("999999999999999999");
 	Num z = Num.add(x, y);
 	System.out.println(z);
+	System.out.println(Num.subtract(x, y));
 	Num a = Num.power(x, 8);
 	System.out.println(a);
 	if(z != null) z.printList();
