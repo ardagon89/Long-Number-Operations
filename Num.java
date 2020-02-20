@@ -25,7 +25,8 @@ public class Num  implements Comparable<Num> {
     		this.isNegative = false;
     	}
     	num_digits = String.valueOf(this.base).length()-1;
-    	this.len = (s.length()/num_digits)+1;
+    	double x = (double)s.length()/num_digits;
+    	this.len = (int)Math.ceil(x);
     	this.arr = new long[this.len];
     	StringBuilder sb = new StringBuilder(s);
     	for(int i=0; i<this.len; i++)
@@ -47,10 +48,69 @@ public class Num  implements Comparable<Num> {
     }
 
     public Num(long x) {
+    	if(x < 0)
+    	{
+    		this.isNegative = true;
+    	}
+    	else
+    	{
+    		this.isNegative = false;
+    	}
+    	int num_digits = String.valueOf(this.base).length()-1;
+    	this.len = (int) Math.ceil((double)String.valueOf(x).length()/num_digits);
+    	this.arr = new long[this.len];
+    	
+    	for(int i=0; i < this.len; i++)
+    	{
+    		this.arr[i] = x % this.base;
+    		x /= this.base;
+    	}
+
+    	for(int i=0; i<this.arr.length; i++)
+    	{
+        	System.out.println(this.arr[i]);
+    	}
     }
 
     public static Num add(Num a, Num b) {
-	return null;
+    	if (a.isNegative == true && b.isNegative == false)
+    	{
+    		a.isNegative = false;
+    		return subtract(b, a);
+    	}
+    	else if (a.isNegative == false && b.isNegative == true)
+    	{
+    		b.isNegative = false;
+    		return subtract(a, b);
+    	}
+    	else if (a.isNegative == true && b.isNegative == true)
+    	{
+    		a.isNegative = false;
+    		b.isNegative = false;
+    		Num result = add(a, b);
+    		result.isNegative = true;
+    		return result;
+    	}
+    	else
+    	{
+    		Num result, smaller;
+    		if(a.len >= b.len)
+    		{
+    			result = a;
+    			smaller = b;
+    		}
+    		else
+    		{
+    			result = b;
+    			smaller = a;
+    		}
+    		int len = a.len >= b.len ? a.len : b.len;
+    		for(int i = 0; i <= len; i++)
+    		{
+    			
+    		}
+    		return result;
+    	}
     }
 
     public static Num subtract(Num a, Num b) {
@@ -128,8 +188,8 @@ public class Num  implements Comparable<Num> {
 
 
     public static void main(String[] args) {
-	Num x = new Num(999);
-	Num y = new Num("8456452342345456456");
+	Num x = new Num(23372036854775807L);
+	Num y = new Num("8456452342035456456");
 	Num z = Num.add(x, y);
 	System.out.println(z);
 	Num a = Num.power(x, 8);
