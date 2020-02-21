@@ -41,14 +41,12 @@ public class Num  implements Comparable<Num> {
     			this.arr[i] = Long.parseLong(sb.toString());
     		}
     	}
-    	this.printList();
     }
 
     public Num(long x) {
     	if(x < 0)
     	{
     		this.isNegative = true;
-    		System.out.println(x+" isNegative "+this.isNegative);
     		x *= -1;
     	}
     	else
@@ -64,8 +62,6 @@ public class Num  implements Comparable<Num> {
     		this.arr[i] = x % this.base;
     		x /= this.base;
     	}
-
-    	this.printList();
     }
     
     public Num(Num x)
@@ -134,18 +130,14 @@ public class Num  implements Comparable<Num> {
     			bigger.arr = temp;
     			bigger.len = temp.length;
     		}
-    		System.out.println("Sum:");
-    		bigger.printList();
     		return bigger;
     	}
     }
 
     public static Num subtract(Num a, Num b) {
     	Num result;
-    	System.out.println("a isNegative "+a.isNegative+" and b isNegative "+b.isNegative);
     	if(a.isNegative && b.isNegative)
     	{
-			System.out.println("Both -ve");
     		a.isNegative = false;
     		b.isNegative = false;
     		result = subtract(a, b);
@@ -158,30 +150,25 @@ public class Num  implements Comparable<Num> {
     	}
     	else if(a.isNegative && !b.isNegative)
     	{
-    		System.out.println("a -ve");
     		b.isNegative = true;
     		result = add(a, b);
     		b.isNegative = false;
     	}
     	else if (!a.isNegative && b.isNegative)
     	{
-    		System.out.println("b -ve");
     		b.isNegative = false;
     		result = add(a, b);
     		b.isNegative = true;
     	}
     	else
     	{
-    		System.out.println("both +ve"+" "+a.isNegative+" "+b.isNegative);
     		if((b.len > a.len))
     		{
-    			System.out.println("b greater");
     			result = subtract(b, a);
     			result.isNegative = true;
     		}
     		else
     		{
-    			System.out.println("b LE");
     			Num smaller;
     			result = new Num(a);
     			smaller = b;
@@ -222,9 +209,19 @@ public class Num  implements Comparable<Num> {
         			result.isNegative = true;
         			result.arr[result.len-1] = result.base - result.arr[result.len-1];
         		}
-        		System.out.println("Sub ");
-        		result.printList();
     		}
+    	}
+    	int i = result.len - 1;
+    	while(i>0 && result.arr[i] == 0)
+    	{
+    		i--;
+    	}
+    	if(i < result.len - 1)
+    	{
+    		long [] temp = new long[i+1];
+    		System.arraycopy(result.arr, 0, temp, 0, temp.length);
+    		result.arr = temp;
+    		result.len = temp.length;
     	}
 	return result;
     }
@@ -320,13 +317,13 @@ public class Num  implements Comparable<Num> {
     }
 
     public static void main(String[] args) {
-	Num x = new Num(-1L);
-	Num y = new Num("-1");
+	Num x = new Num(999999999999999999L);
+	Num y = new Num("999999999999999999");
 	Num z = Num.add(x, y);
-	//System.out.println(z);
-	System.out.println(Num.subtract(x, y));
+	System.out.println("Sum: "+z);
+	System.out.println("Sub: "+Num.subtract(x, y));
 	Num a = Num.power(x, 8);
 	System.out.println(a);
-	//if(z != null) z.printList();
+	if(z != null) z.printList();
     }
 }
