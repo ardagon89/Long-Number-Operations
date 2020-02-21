@@ -254,7 +254,84 @@ public class Num  implements Comparable<Num> {
     // Utility functions
     // compare "this" to "other": return +1 if this is greater, 0 if equal, -1 otherwise
     public int compareTo(Num other) {
-	return 0;
+    	int result = 0;
+    	if(this.isNegative && !other.isNegative)
+    	{
+    		result = -1;
+    	}
+    	else if(!this.isNegative && other.isNegative)
+    	{
+    		result = 1;
+    	}
+    	else if(!this.isNegative && !other.isNegative)
+    	{
+    		if(this.len == other.len)
+    		{
+    			int i = this.len - 1;
+    			while(i>=0 && this.arr[i]==other.arr[i])
+    			{
+    				i--;
+    			}
+    			if(i==-1)
+    			{
+    				result = 0;
+    			}
+    			else
+    			{
+    				if(this.arr[i]<other.arr[i])
+    				{
+    					result = -1;
+    				}
+    				else
+    				{
+    					result = 1;
+    				}
+    			}
+    		}
+    		else if(this.len < other.len)
+    		{
+    			result = -1;
+    		}
+    		else
+    		{
+    			result = 1;
+    		}
+    	}
+    	else
+    	{
+    		if(this.len == other.len)
+    		{
+    			int i = this.len - 1;
+    			while(i>=0 && this.arr[i]==other.arr[i])
+    			{
+    				i--;
+    			}
+    			if(i==-1)
+    			{
+    				result = 0;
+    			}
+    			else
+    			{
+    				if(this.arr[i]<other.arr[i])
+    				{
+    					result = 1;
+    				}
+    				else
+    				{
+    					result = -1;
+    				}
+    			}
+    		}
+    		else if(this.len < other.len)
+    		{
+    			result = 1;
+    		}
+    		else
+    		{
+    			result = -1;
+    		}
+    	}
+	return result;
     }
     
     // Output using the format "base: elements of list ..."
@@ -317,11 +394,12 @@ public class Num  implements Comparable<Num> {
     }
 
     public static void main(String[] args) {
-	Num x = new Num(999999999999999999L);
+	Num x = new Num(-1L);
 	Num y = new Num("999999999999999999");
 	Num z = Num.add(x, y);
 	System.out.println("Sum: "+z);
 	System.out.println("Sub: "+Num.subtract(x, y));
+	System.out.println("Compare: "+x.compareTo(y));
 	Num a = Num.power(x, 8);
 	System.out.println(a);
 	if(z != null) z.printList();
