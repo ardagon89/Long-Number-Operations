@@ -5,6 +5,11 @@
 // Change following line to your NetId
 package sxa190016;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+
 public class Num  implements Comparable<Num> {
 
     static long defaultBase = 1000000000;  // Change as needed
@@ -390,11 +395,78 @@ public class Num  implements Comparable<Num> {
     // Tokenize the string and then input them to parser
 	// Implementing this method correctly earns you an excellence credit
     public static Num evaluateExp(String expr) {
-	return null;
+    	System.out.println("Input:"+expr);
+    	ArrayList<String> postfix = new ArrayList<String>();
+    	Stack<String> operators = new Stack<String>();
+    	StringBuilder sb = new StringBuilder();
+    	Map<String, Integer> precedence = new HashMap<String, Integer>();
+    	precedence.put("(", 1);
+    	precedence.put(")", 1);
+    	precedence.put("+", 2);
+    	precedence.put("-", 2);
+    	precedence.put("*", 3);
+    	precedence.put("/", 3);
+    	precedence.put("%", 3);
+    	precedence.put("^", 4);
+
+    	for(int i=0; i< expr.length(); i++) {
+    		if(expr.charAt(i) >= '0' && expr.charAt(i) <= '9')
+    		{
+    			sb.append(expr.charAt(i));
+    			if(i == expr.length()-1)
+    			{
+    				postfix.add(sb.toString());
+    				sb.setLength(0);
+    			}
+    		}
+    		else
+    		{
+    			if(sb.length() > 0)
+    			{
+    				postfix.add(sb.toString());
+    				sb.setLength(0);
+    			}
+    			if(expr.charAt(i) != ' ')
+    			{
+    				if(expr.charAt(i) == ')')
+    				{
+						while(!operators.peek().equals("("))
+    					{
+    						postfix.add(operators.pop());
+    					}
+    					operators.pop();					
+    				}
+    				else
+    				{
+    					while((!operators.isEmpty())
+    							&& 
+    							(!operators.peek().equals("("))
+    							&& 
+    							(!String.valueOf(expr.charAt(i)).equals("("))
+    							&&
+    							(precedence.get(operators.peek()).compareTo(precedence.get(String.valueOf(expr.charAt(i)))) > 0
+								||
+								(precedence.get(operators.peek()).equals(precedence.get(String.valueOf(expr.charAt(i))))
+										&& (!String.valueOf(expr.charAt(i)).equals("^")))))
+    					{
+    						postfix.add(operators.pop());
+    					}
+        				operators.add(String.valueOf(expr.charAt(i)));
+    				}
+    			}
+    		}
+    		//System.out.println(String.valueOf(expr.charAt(i))+" "+postfix+" "+operators);
+    	}
+    	while(!operators.isEmpty())
+    	{
+    		postfix.add(operators.pop());
+    	}
+    	System.out.println("Output:"+postfix);
+	return evaluatePostfix(postfix.toArray(new String[postfix.size()]));
     }
 
     public static void main(String[] args) {
-	Num x = new Num(-1L);
+	Num x = new Num(999999999999999999L);
 	Num y = new Num("999999999999999999");
 	Num z = Num.add(x, y);
 	System.out.println("Sum: "+z);
@@ -403,5 +475,6 @@ public class Num  implements Comparable<Num> {
 	Num a = Num.power(x, 8);
 	System.out.println(a);
 	if(z != null) z.printList();
+	Num.evaluateExp("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3");
     }
 }
