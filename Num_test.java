@@ -17,16 +17,17 @@ public class Num  implements Comparable<Num> {
 
     public Num(String s) {
     	int num_digits;
-    	if(s.charAt(0) == '-')
+    	if(s.charAt(0) == '-') //checking number is negative or not
     	{
     		this.isNegative = true;
-    		s = s.substring(1);
+    		s = s.substring(1);		// taking only the magnitude
     	}
     	else
     	{
-    		this.isNegative = false;
+    		this.isNegative = false; // number is positive
     	}
-    	num_digits = String.valueOf(this.base).length()-1;
+    	// calculating the number of digits
+    	num_digits = String.valueOf(this.base).length()-1; 
     	double x = (double)s.length()/num_digits;
     	this.len = (int)Math.ceil(x);
     	this.arr = new long[this.len];
@@ -45,16 +46,20 @@ public class Num  implements Comparable<Num> {
     	}
     }
 
+    //setting the part for initializing a number object in long format.
     public Num(long x) {
+    	//Number is negative
     	if(x < 0)
     	{
     		this.isNegative = true;
     		x *= -1;
     	}
+    	// Number is positive
     	else
     	{
     		this.isNegative = false;
     	}
+    	// calculating the number of digits
     	int num_digits = String.valueOf(this.base).length()-1;
     	this.len = (int) Math.ceil((double)String.valueOf(x).length()/num_digits);
     	this.arr = new long[this.len];
@@ -65,10 +70,14 @@ public class Num  implements Comparable<Num> {
     		x /= this.base;
     	}
     }
+    
+    //defining a blank constructor to define new Num
     private Num()
     {
     	
     }
+    
+    //Defining Num constructor
     public Num(Num x)
     {
     	this.isNegative = x.isNegative;
@@ -76,9 +85,12 @@ public class Num  implements Comparable<Num> {
     	this.base = x.base;
     	this.arr = x.arr.clone();
     }
-
+    
+    //Defining add constructor for adding two numbers
     public static Num add(Num a, Num b) {
-    	Num result;
+    	 Num result;
+    	 
+    	 // if a is negative and b is positive then subtract a from b
     	if (a.isNegative == true && b.isNegative == false)
     	{
     		a.isNegative = false;
@@ -86,6 +98,8 @@ public class Num  implements Comparable<Num> {
     		a.isNegative = true;
     		return result;
     	}
+    	
+    	//if a is positive and b is negative subtract b from a
     	else if (a.isNegative == false && b.isNegative == true)
     	{
     		b.isNegative = false;
@@ -93,6 +107,7 @@ public class Num  implements Comparable<Num> {
     		b.isNegative = true;
     		return result;
     	}
+    	// if both a & b are negative add a & b
     	else if (a.isNegative == true && b.isNegative == true)
     	{
     		a.isNegative = false;
@@ -103,6 +118,8 @@ public class Num  implements Comparable<Num> {
     		b.isNegative = true;
     		return result;
     	}
+    	
+    	// both are positive just add with carry
     	else
     	{
     		Num smaller, bigger;
@@ -139,8 +156,11 @@ public class Num  implements Comparable<Num> {
     	}
     }
 
+    // subtracting 2 numbers
     public static Num subtract(Num a, Num b) {
     	Num result;
+    	
+    	// if both are negative then just subtract b from a by keeping isNegative as false as -a -(-b) = -a + b
     	if(a.isNegative && b.isNegative)
     	{
     		a.isNegative = false;
@@ -153,26 +173,30 @@ public class Num  implements Comparable<Num> {
     		a.isNegative = true;
     		b.isNegative = true;
     	}
+    	//if a is negative and b is not negative then just add a & b by considering b as negative as -a -(+b) = -(a+b)
     	else if(a.isNegative && !b.isNegative)
     	{
     		b.isNegative = true;
     		result = add(a, b);
     		b.isNegative = false;
     	}
+    	
+    	// if b is negative and a is positive then just add a & b, as a -(-b) = a + b
     	else if (!a.isNegative && b.isNegative)
     	{
     		b.isNegative = false;
     		result = add(a, b);
     		b.isNegative = true;
     	}
+    	// if both a & b are positive
     	else
     	{
-    		if((b.len > a.len))
+    		if(b.compareTo(a)==1 || (b.compareTo(a) == 0)) // checking if b is greater than a
     		{
     			result = subtract(b, a);
     			result.isNegative = true;
     		}
-    		else
+    		else // if a is greater than b
     		{
     			Num smaller;
     			result = new Num(a);
@@ -231,6 +255,7 @@ public class Num  implements Comparable<Num> {
 	return result;
     }
 
+    //computing the product of a & b
     public static Num product(Num a, Num b) {
     	Num result = new Num();
 
@@ -247,6 +272,7 @@ public class Num  implements Comparable<Num> {
 		return result;
     }
 
+    // helper function for computing product
     private Num mag_product(Num a, Num b)
     {
     	Num result = new Num();
@@ -316,27 +342,27 @@ public class Num  implements Comparable<Num> {
     		else {
 				partition(a, Xr, Xl, b, Yr, Yl); // both are of same length, just need to be partitioned into fh and sh.
 			}
-    		
-    		Num r1 = new Num();
-    		r1 = mag_product(Xr, Yr);
+    		// Calling using Recursion
+    		Num prod1 = new Num();
+    		prod1 = mag_product(Xr, Yr);
 
-    		// Recursive Call 2:
-    		Num r2 = new Num();
-    		r2 = mag_product(Xl, Yl);
+    		// Calling using Recursion
+    		Num prod2 = new Num();
+    		prod2 = mag_product(Xl, Yl);
 
-    		// Recursive Call 3:
-    		Num r3 = new Num();
-    		r3 = mag_product(add(Xl, Xr), add(Yl, Yr));
+    		// Calling using Recursion
+    		Num prod3 = new Num();
+    		prod3 = mag_product(add(Xl, Xr), add(Yl, Yr));
 
     		// CONQUER STEP:
     		// a * b = shiftZeros(r1,(n/1+n/2)) + r2 + shiftZeros(r3-r2-r1, n/2)
-    		Num sum = add(r1, r2);
-    		Num r4 = subtract(r3, sum);
+    		Num sum = add(prod1, prod2);
+    		Num r4 = subtract(prod3, sum);
 
-    		Num f1 = shiftZeros(r1, (n / 2 + n / 2));
+    		Num f1 = shiftZeros(prod1, (n / 2 + n / 2));
     		Num f2 = shiftZeros(r4, n / 2);
 
-    		Num temp = add(f1, r2);
+    		Num temp = add(f1, prod2);
     		result = add(temp, f2);
     	}
     	return result;
@@ -363,19 +389,21 @@ public class Num  implements Comparable<Num> {
 		return padded;
 	}
 
-    
+    // helper function for partitioning the numbers in Karatsuba's algorithm
     private void partition(Num a, Num a1, Num a2, Num b, Num b1, Num b2) {
 		int i = 0;
+		// considering the longer number
 		int n = a.compareTo(b) == 0 || a.compareTo(b) == 1? a.len : b.len;
+		//partitioning length
 		int l2 = n/2;
-		// Consider a = 12345 = [5,4,3,2,1]. So, l2 = 2.
-		// a1 = 123 = [3,2,1] and a2 = 45 = [5,4]
+		// Consider a = 347812 = [2,1,8,7,4,3]. So, l2 = 3.
+		// a1 = 123 = [7,4,3] - upper half and a2 = 45 = [2,1,8] - lower half
 		for (i=0; i<l2; i++) {
-			a2.arr[i] = a.arr[i];
-			b2.arr[i] = b.arr[i];
+			a2.arr[i] = a.arr[i]; // filling the lower half of a into a2
+			b2.arr[i] = b.arr[i]; // filling the lower half of b into b2
 
-			a1.arr[i] = a.arr[l2 + i];
-			b1.arr[i] = b.arr[l2 + i];
+			a1.arr[i] = a.arr[l2 + i];// filling the upper half of a into a1
+			b1.arr[i] = b.arr[l2 + i];// filling the upper half of b into b1
 		}
 		// When n is Odd number
 		if (n % 2 != 0) {
@@ -404,7 +432,7 @@ public class Num  implements Comparable<Num> {
 	}
     
     // Use divide and conquer
-    public static Num power(Num a, long n) {
+    public static Num power(Num x, long n) {
     	Num out = new Num();
 		Num one = new Num(1);
 		Num zero = new Num(0);
@@ -412,7 +440,7 @@ public class Num  implements Comparable<Num> {
 		
 		// When n = 0 , means power is 0.
 		if (n == 0) {
-			if (a.compareTo(zero) == 0) {
+			if (x.compareTo(zero) == 0) {
 				throw new ArithmeticException("power(0,0) is Undefined!");
 			} else {
 				return one;
@@ -421,23 +449,23 @@ public class Num  implements Comparable<Num> {
 		// When n is < 0 means power is Negative.
 		if (n < 0) {
 
-			if (a.compareTo(zero) == 0)
+			if (x.compareTo(zero) == 0)
 				throw new ArithmeticException("power(0,Negative) is Undefined!");
 			
-			if (a.isNegative && a.compareTo(one) == 0) {
+			if (x.isNegative && x.compareTo(one) == 0) {
 				if (n % 2 == 0) return one; // a == 1 & even number of negative 1 therefore positive result
 				else return minusOne; // a == 1 & odd number of negative 1 therefore negative result
 			}
 			
-			if (a.compareTo(one) == 0) return one; // a == 1 is raised to power any positive integer is 1.
+			if (x.compareTo(one) == 0) return one; // a == 1 is raised to power any positive integer is 1.
 				
-			if (a.compareTo(zero) > 0 && a.isNegative) {
+			if (x.compareTo(zero) > 0 && x.isNegative) {
 				if (n % 2 == 0) return zero; // -ve number raised to -ve power(even) will return positive number
 				else return minusOne; //-ve number raised to -ve(odd) power will return negative number
 				
 			}
 			
-			if (a.compareTo(zero) > 0) return zero; // positive number raised to a negative power will return a fraction hence
+			if (x.compareTo(zero) > 0) return zero; // positive number raised to a negative power will return a fraction hence
 			// an integer value equal to 0.
 
 		}
@@ -445,36 +473,36 @@ public class Num  implements Comparable<Num> {
 		// When power is Positive
 		if (n > 0) {
 
-			if (a.compareTo(zero) == 0) return zero; //a is 0 so 0 ^ pos_power = 0
+			if (x.compareTo(zero) == 0) return zero; //a is 0 so 0 ^ pos_power = 0
 			
-			if (a.compareTo(one) == 0 && a.isNegative) { // a = -1
+			if (x.compareTo(one) == 0 && x.isNegative) { // a = -1
 				if (n % 2 == 0) return one; // -1 ^ even_pow = 1
 				else return minusOne; // -1 ^ odd_pow = -1;
 			}
 			
-			if (a.compareTo(one) == 0) return one; // 1 ^ power(any number) = 1
+			if (x.compareTo(one) == 0) return one; // 1 ^ power(any number) = 1
 
 			// When a is Negative
-			if (a.compareTo(zero) > 0 && a.isNegative) {
+			if (x.compareTo(zero) > 0 && x.isNegative) {
 				if (n % 2 == 1) out.isNegative = true; // a < 0 ^ odd power = -ve number
-				out = out.power_Helper(a, n);      // compute the negative number
+				out = out.power_Helper(x, n);      // compute the negative number
 				return out;               // return the answer
 			}
 			
 			// When a is Positive
-			else return out.power_Helper(a, n); // Compute and return the positive number
+			else return out.power_Helper(x, n); // Compute and return the positive number
 		}
 		return out;   // for the function to work
     }
     
     //Helper function to compute the power of the number
-    private Num power_Helper(Num a, long n) {
+    private Num power_Helper(Num x, long n) {
 
 		if (n == 0) return new Num(1); // power = 0, so a ^ 0 = 1
 
-		if (n == 1) return a; // a^1 = a   
+		if (n == 1) return x; // a^1 = a   
 		
-		Num halfPower = power_Helper(a, n/2); // saving (4 - 1) recursive calls
+		Num halfPower = power_Helper(x, n/2); // saving (4 - 1) recursive calls
 
 		// When n is Positive and EVEN
 		if (n % 2 == 0)
@@ -482,7 +510,7 @@ public class Num  implements Comparable<Num> {
 
 		// When n is Positive and ODD
 		else
-			return product(a, product(halfPower, halfPower));
+			return product(x, product(halfPower, halfPower));
 	}
 
     // Use binary search to calculate a/b
@@ -495,7 +523,7 @@ public class Num  implements Comparable<Num> {
 
 		// Division by ZERO
 		if (b.compareTo(zero) == 0)
-			throw new ArithmeticException("Division by ZERO.");
+			throw new ArithmeticException("Connot divide by ZERO.");
 
 		// Numerator is ZERO
 		if (a.compareTo(zero) == 0)
